@@ -13,12 +13,44 @@ var y = d3.scale.linear()
 
 var xCat = "tSNE1",
     yCat = "tSNE2",
-    colorCat = "cluster";
+    totalUmis = "totalUmis",
+    colorCat = "cellType";
 
-d3.csv("brain_data_noquotes.csv", function(data) {
+// Color Palette
+var colors = ["#ff619b",
+"#ec0037",
+"#453fe8",
+"#007344",
+"#dc4fff",
+"#9fff97",
+"#c0009f",
+"#00c581",
+"#9fcf00",
+"#ffe930",
+"#ff85fb",
+"#7d9000",
+"#280056",
+"#ffda64",
+"#013c99",
+"#e8a000",
+"#8e96ff",
+"#4b5200",
+"#b80050",
+"#ffffaa",
+"#2e001e",
+"#acd5ff",
+"#820013",
+"#805000"];
+
+var color = d3.scale.ordinal()
+  .range(colors);
+
+
+d3.csv("brain_data.csv", function(data) {
   data.forEach(function(d) {
     d.tSNE1 = +d.tSNE1;
     d.tSNE2 = +d.tSNE2;
+    d.totalUmis = +d.totalUmis;
     d.cluster = +d.cluster;
   });
 
@@ -42,13 +74,13 @@ d3.csv("brain_data_noquotes.csv", function(data) {
       .orient("left")
       .tickSize(-width);
 
-  var color = d3.scale.category10();
+
 
   var tip = d3.tip()
       .attr("class", "d3-tip")
       .offset([-10, 0])
       .html(function(d) {
-        return xCat + ": " + d[xCat] + "<br>" + yCat + ": " + d[yCat];
+        return xCat + ": " + d[xCat] + "<br>" + yCat + ": " + d[yCat] + "<br>" +  "Cell Type: " + d[colorCat] + "<br>"  + "Total UMIs: " + d[totalUmis];
       });
 
   var zoomBeh = d3.behavior.zoom()
@@ -117,7 +149,9 @@ d3.csv("brain_data_noquotes.csv", function(data) {
       .data(data)
     .enter().append("circle")
       .classed("dot", true)
-      .attr("r", 2)
+      .attr("r", 2.5)
+      .attr('stroke','black')
+      .attr('stroke-width',0.1)
       .attr("transform", transform)
       .style("fill", function(d) { return color(d[colorCat]); })
       .on("mouseover", tip.show)
@@ -130,7 +164,9 @@ d3.csv("brain_data_noquotes.csv", function(data) {
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
   legend.append("circle")
-      .attr("r", 3.5)
+      .attr("r", 5)
+      .attr('stroke','black')
+      .attr('stroke-width',0.5)
       .attr("cx", width + 20)
       .attr("fill", color);
 
@@ -138,6 +174,8 @@ d3.csv("brain_data_noquotes.csv", function(data) {
       .attr("x", width + 26)
       .attr("dy", ".35em")
       .text(function(d) { return d; });
+
+
 
   d3.select("input").on("click", change);
 
