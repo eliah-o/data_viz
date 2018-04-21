@@ -154,8 +154,23 @@ d3.csv("brain_data.csv", function(data) {
       .attr('stroke-width',0.1)
       .attr("transform", transform)
       .style("fill", function(d) { return color(d[colorCat]); })
-      .on("mouseover", tip.show)
-      .on("mouseout", tip.hide);
+      .on('mouseover', function (d) {
+        d3.select(this)
+          .transition()
+          .duration(500)
+          .attr('r',7)
+          .attr('stroke-width',3);
+        tip.show(d);
+      })
+      .on('mouseout', function (d) {
+        d3.select(this)
+          .transition()
+          .duration(500)
+          .attr('r',2.5)
+          .attr('stroke-width',0.1); 
+        tip.hide(d);
+      })
+
 
   var legend = svg.selectAll(".legend")
       .data(color.domain())
